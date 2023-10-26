@@ -1,5 +1,8 @@
 const express = require('express');
+require('dotenv').config()
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose')
+require('./config/database.config')
 
 const feedRoutes = require('./routes/feed.route');
 
@@ -16,6 +19,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/feed', feedRoutes);
+
 
 const port = 8000
 app.listen(port, () => {
