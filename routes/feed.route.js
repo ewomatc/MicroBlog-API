@@ -1,19 +1,22 @@
 const express = require('express');
-const {body} = require('express-validator')
+const {
+  validateCreatePost
+} = require('../middleware/validation/postValidation')
 
-const feedController = require('../controllers/feed.controller');
+const {
+  getPosts,
+  createPost
+} = require('../controllers/feed.controller');
 
 const router = express.Router();
 
 // GET /feed/posts
-router.get('/posts', feedController.getPosts);
+router.get('/posts', getPosts);
 
 // POST /feed/post
-router.post('/post', 
-  [
-    body('title').trim().isLength({ min: 5 }).withMessage('Title must be a minimum of 5 characters'),
-    body('content').trim().isLength({ min: 5 })  
-  ],
-  feedController.createPost);
+router.post('/post', validateCreatePost, createPost);
+
+// GET /fed/post/podtid
+router.get('/post/:postId', )
 
 module.exports = router;
