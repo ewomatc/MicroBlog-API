@@ -5,7 +5,9 @@ const {
 
 const {
   getPosts,
-  createPost
+  createPost,
+  getPost,
+  getSinglePost
 } = require('../controllers/feed.controller');
 
 const router = express.Router();
@@ -17,6 +19,6 @@ router.get('/posts', getPosts);
 router.post('/post', validateCreatePost, createPost);
 
 // GET /fed/post/podtid
-router.get('/post/:postId', )
+router.get('/post/:postId', getSinglePost)
 
 module.exports = router;

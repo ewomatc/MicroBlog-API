@@ -1,21 +1,22 @@
 const {validationResult} = require('express-validator')
 const Post = require('../models/post')
+const mongoose = require('mongoose')
 
 
-exports.getPosts = (req, res, next) => {
-  res.status(200).json({
-    posts: [
-      { 
-        title: 'First Post', 
-        content: 'This is the first post!', 
-        imageUrl: '../images/159422.jpg',
-        creator: {
-          name: 'Ewoma'
-        },
-				createdAt: new Date()
-      }
-    ]
-  });
+exports.getPosts = async (req, res, next) => {
+  try {
+    const posts = await Post.find()
+
+    if(!posts) {
+      return res.status(404).json('Could not get posts')
+    }
+    res.status(200).json({
+      success: true,
+      posts
+    })
+  } catch (error) {
+    next(error)
+  }
 };
 
 exports.createPost = async (req, res, next) => {
@@ -38,7 +39,7 @@ exports.createPost = async (req, res, next) => {
       title,
       content,
       imageUrl: '../images/159422.jpg',
-      creator: {name: 'Ewoma'}
+      creator: 'Ewoma'
     })
     
     await post.save()
@@ -47,23 +48,32 @@ exports.createPost = async (req, res, next) => {
       post
     })
   } catch (error) {
-      next(error)
+    next(error)
   }
 };
 
-exports.getPost = (req, res, next) => {
-	const postId = req.params.postId
-	Post.findById(postId)
-  .then(post => {
-		if(!post) {
-			const error = new Error('could not find post');
-      error.statusCode = 404
-      throw error;
-		}
-	}).catch((err) => {
-		if(!err.statusCode) {
-      err.statusCode = 500;
+exports.getSinglePost = async (req, res, next) => {
+  try{
+    const postId = req.params.postId
+    if(!mongoose.Types.ObjectId.isValid(postId)) {
+      return(res.status(400).json({
+        Error: 'Invalid post id'
+      }))
     }
+    
+    const post = await Post.findById(postId)
+
+    if(!post) {
+      return res.status(404).json({
+        error: 'Could not find post'
+      })
+    }
+    res.status(200).json({
+      success: true,
+      post
+    })
+  }
+  catch(err) {
     next(err)
-	});
+  }
 }
