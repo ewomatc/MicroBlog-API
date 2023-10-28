@@ -21,4 +21,7 @@ router.post('/post', validateCreatePost, createPost);
 // GET /fed/post/podtid
 router.get('/post/:postId', getSinglePost)
 
+// PUT /feed/post/postId
+router.put('/post/:postId', )
+
 module.exports = router;

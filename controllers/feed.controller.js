@@ -28,17 +28,22 @@ exports.createPost = async (req, res, next) => {
       error.statusCode = 422
       throw error
 	  } 
+    if(!req.file) {
+      return res.status(422).json({
+        error: 'no image provided'
+      })
+    }
     const {
       title,
       content,
-      imageUrl, 
       creator
     } = req.body
+    const imageUrl = req.file.path
 
     const post = new Post({
       title,
       content,
-      imageUrl: '../images/159422.jpg',
+      imageUrl,
       creator: 'Ewoma'
     })
     
@@ -75,5 +80,29 @@ exports.getSinglePost = async (req, res, next) => {
   }
   catch(err) {
     next(err)
+  }
+}
+
+
+exports.updatePost = async (req, res, next) => {
+  try {
+    const postId = req.params.postId
+    const {
+      title,
+      content,
+      imageUrl
+    } = req.body;
+// check if the image was updated and passed as a file, get the new image name from there instead
+    if(req.file) {
+      imageUrl = req.file.path
+    }
+
+    if (!imageUrl) {
+      return res.status(400).json({
+        Error: 'No image picked'
+      })
+    }
+  } catch (error) {
+    next(error)
   }
 }
