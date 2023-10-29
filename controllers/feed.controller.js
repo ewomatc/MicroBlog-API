@@ -1,6 +1,9 @@
 const {validationResult} = require('express-validator')
-const Post = require('../models/post')
 const mongoose = require('mongoose')
+const Post = require('../models/post')
+const fs = require('fs');
+const path = require('path');
+const post = require('../models/post');
 
 
 exports.getPosts = async (req, res, next) => {
@@ -24,9 +27,9 @@ exports.createPost = async (req, res, next) => {
 
     const errors = validationResult(req)
 	  if(!errors.isEmpty()) {
-		  const error = new Error('Validation failed')
-      error.statusCode = 422
-      throw error
+		  return res.status(400).json({
+        error: errors.mapped()
+      })
 	  } 
     if(!req.file) {
       return res.status(422).json({
@@ -87,22 +90,75 @@ exports.getSinglePost = async (req, res, next) => {
 exports.updatePost = async (req, res, next) => {
   try {
     const postId = req.params.postId
-    const {
-      title,
-      content,
-      imageUrl
-    } = req.body;
-// check if the image was updated and passed as a file, get the new image name from there instead
-    if(req.file) {
-      imageUrl = req.file.path
+    if(!mongoose.Types.ObjectId.isValid(postId)) {
+      return(res.status(400).json({
+        Error: 'Invalid post id'
+      }))
     }
 
-    if (!imageUrl) {
+    const errors = validationResult(req)
+	  if(!errors.isEmpty()) {
+		  return res.status(400).json({
+        error: errors.mapped()
+      })
+    }
+
+    const {
+      title,
+      content
+    } = req.body;
+
+    let newImageUrl = req.body.imageUrl
+    let previousImageUrl = ''
+
+    if(req.file) {
+      newImageUrl = req.file.path
+    }
+    if (!newImageUrl) {
       return res.status(400).json({
         Error: 'No image picked'
       })
     }
+    // find the post to get the previous image url
+    const post = await Post.findById(postId)
+    if(!post) {
+      return res.status(404).json({ Error: 'Post not found'})
+    }
+
+    // store the previous image url
+    previousImageUrl = post.imageUrl
+    
+    // save updated post
+    const updatedPost = await Post.findOneAndUpdate({ _id: postId},
+      {
+        title,
+        content,
+        imageUrl: newImageUrl
+      }, { new: true })
+
+      if(previousImageUrl && previousImageUrl !== newImageUrl) {
+        clearImage(previousImageUrl)
+      }
+
+      if(!updatedPost) {
+        return res.status(404).json({
+          Error: 'Post not found'
+        })
+      }
+
+      res.status(200).json({
+        success: true,
+        updatedPost,
+      })
+
   } catch (error) {
     next(error)
   }
+}
+
+const clearImage = (filePath) => {
+  filePath = path.join(__dirname, '..', filePath)
+  fs.unlink(filePath, err => {
+    console.log(err);
+  })
 }

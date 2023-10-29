@@ -1,13 +1,15 @@
 const express = require('express');
 const {
-  validateCreatePost
+  validateCreatePost,
+  validateUpdatePost
 } = require('../middleware/validation/postValidation')
 
 const {
   getPosts,
   createPost,
   getPost,
-  getSinglePost
+  getSinglePost,
+  updatePost
 } = require('../controllers/feed.controller');
 
 const router = express.Router();
@@ -22,6 +24,6 @@ router.post('/post', validateCreatePost, createPost);
 router.get('/post/:postId', getSinglePost)
 
 // PUT /feed/post/postId
-router.put('/post/:postId', )
+router.put('/post/:postId', validateUpdatePost, updatePost)
 
 module.exports = router;
