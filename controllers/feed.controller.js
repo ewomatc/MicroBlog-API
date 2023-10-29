@@ -162,3 +162,35 @@ const clearImage = (filePath) => {
     console.log(err);
   })
 }
+
+exports.deletePost = async (req, res, next) => {
+  try {
+    const postId = req.params.postId
+
+    if(!mongoose.Types.ObjectId.isValid(postId)) {
+      return(res.status(400).json({
+        Error: 'Invalid post id'
+      }))
+    }    
+
+    const post = await Post.findById(postId)
+    if(!post) {
+      return res.status(404).json({
+        error: 'Post not found'
+      })
+    }
+
+    const deletedPost = await Post.findByIdAndRemove(postId)
+
+    if(deletedPost) {
+      clearImage(post.imageUrl)
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Post deleted successfully'
+    })
+  } catch (error) {
+    next(error)
+  }
+}

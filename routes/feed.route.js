@@ -7,9 +7,9 @@ const {
 const {
   getPosts,
   createPost,
-  getPost,
   getSinglePost,
-  updatePost
+  updatePost,
+  deletePost
 } = require('../controllers/feed.controller');
 
 const router = express.Router();
@@ -25,5 +25,7 @@ router.get('/post/:postId', getSinglePost)
 
 // PUT /feed/post/postId
 router.put('/post/:postId', validateUpdatePost, updatePost)
+
+router.delete('/post/:postId', deletePost)
 
 module.exports = router;
