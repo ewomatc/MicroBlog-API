@@ -3,19 +3,34 @@ const mongoose = require('mongoose')
 const Post = require('../models/post')
 const fs = require('fs');
 const path = require('path');
-const post = require('../models/post');
 
-
+/**
+ * In this get all posts I have learnt and implemented pagination
+ * so basically we need two variables, the 'currentPage' and the number of posts to display- 'perPage'.
+ * We then use the .skip() method to skip the specified number of posts, in this case, depends on the currentPage we are on.
+ * The .limit() limits the number of posts that can be displayed on a page to the perPage which is hard coded here as '2'.
+ */
 exports.getPosts = async (req, res, next) => {
   try {
+    // setup pagination
+    const currentPage = req.query.page || 1
+    const perPage = 2
+
+    let totalItems = await Post.find().countDocuments()
+    if(!totalItems) {
+      return res.status(404).json({error: 'could not get item count'})
+    }
+
     const posts = await Post.find()
+    .skip((currentPage - 1) * perPage)
+    .limit(perPage)
 
     if(!posts) {
       return res.status(404).json('Could not get posts')
     }
     res.status(200).json({
       success: true,
-      posts
+      posts, totalItems
     })
   } catch (error) {
     next(error)
