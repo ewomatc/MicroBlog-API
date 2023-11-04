@@ -9,6 +9,8 @@ const {errorHandler, notFoundErrorHandler} = require('./middleware/errorHandler'
 const {fileFilter, fileStorage} = require('./middleware/multerConfig')
 
 const feedRoutes = require('./routes/feed.route');
+const userRoutes = require('./routes/user.route');
+
 
 const app = express();
 
@@ -22,7 +24,7 @@ app.use(multer({
 app.use('/images', express.static(path.join(__dirname, 'images')))
 app.use(morgan('tiny'))
 
-//cors
+//CORS
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
@@ -31,6 +33,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/feed', feedRoutes);
+app.use('/api/user', userRoutes);
+
 
 // register error handlers
 app.use(errorHandler)
