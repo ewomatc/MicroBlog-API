@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: 'Hi there! I am using microblog'
+    default: "Hi there! I'm using microblog"
   },
   posts: [{
     type: mongoose.Schema.Types.ObjectId,
