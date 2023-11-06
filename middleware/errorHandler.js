@@ -4,7 +4,7 @@ exports.errorHandler = (err, req, res, next) => {
   const status = err.statusCode || 500;
 
   const errorResponse = {
-    error: err.message || 'Something went wrong',
+    error: 'Something went wrong',
   };
 
   res.status(status).json(errorResponse);
