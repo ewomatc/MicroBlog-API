@@ -19,14 +19,14 @@ const router = express.Router();
 router.get('/posts', verifyAuth, getPosts);
 
 // POST /feed/post
-router.post('/post', validateCreatePost, createPost);
+router.post('/post', validateCreatePost, verifyAuth, createPost);
 
 // GET /fed/post/podtid
-router.get('/post/:postId', getSinglePost);
+router.get('/post/:postId', verifyAuth, getSinglePost);
 
 // PUT /feed/post/postId
-router.put('/post/:postId', validateUpdatePost, updatePost);
+router.put('/post/:postId', validateUpdatePost, verifyAuth, updatePost);
 
-router.delete('/post/:postId', deletePost);
+router.delete('/post/:postId', verifyAuth, deletePost);
 
 module.exports = router;
