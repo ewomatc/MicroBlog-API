@@ -34,7 +34,9 @@ app.use((req, res, next) => {
 
 app.use('/api/feed', feedRoutes);
 app.use('/api/user', userRoutes);
-
+app.get('/', (req, res) => {
+  res.json({success: true, message: 'welcome to MicroBlog API ' })
+})
 
 // register error handlers
 app.use(errorHandler)
