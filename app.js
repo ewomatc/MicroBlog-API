@@ -51,7 +51,7 @@ app.use(notFoundErrorHandler);
 
 const port = 8000;
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const io = require('./socket').init(server)
 
 const startServer = () => {
 	server.listen(port, () => {

@@ -4,7 +4,7 @@ const Post = require('../models/post');
 const User = require('../models/user');
 const fs = require('fs');
 const path = require('path');
-
+const io = require('../socket');
 /**
  * In this get all posts I have learnt and implemented pagination
  * so basically we need two variables, the 'currentPage' and the number of posts to display- 'perPage'.
@@ -69,6 +69,10 @@ exports.createPost = async (req, res, next) => {
 		user.posts.push(post);
 		// save the user
 		await user.save();
+
+		// the getIo() first tries to retrieve a running instance of socketio, if theres none, it throws an error.
+		// uset the .emit() method provided by socketio to send a message to all connected users
+		io.getIo().emit('posts', { action: 'create', post });
 
 		res.status(201).json({
 			success: true,
